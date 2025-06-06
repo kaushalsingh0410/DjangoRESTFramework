@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView 
 from django.http import Http404
+from rest_framework import generics,mixins
 
 
 
@@ -46,18 +47,42 @@ def studentAction(request,pk):
 
 
 
-# APIView
-class EmployeeList(APIView):
-    def get(self,request):
-        employees = Employee.objects.all()
-        serializer = EmployeeSerializer(employees,many = True)
-        return Response(serializer.data)
+# # APIView
+# class EmployeeList(APIView):
+#     def get(self,request):
+#         employees = Employee.objects.all()
+#         serializer = EmployeeSerializer(employees,many = True)
+#         return Response(serializer.data)
     
-    def post(self,request):
-        serializer = EmployeeSerializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data,status=status.HTTP_201_CREATED)
+#     def post(self,request):
+#         serializer = EmployeeSerializer(data = request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data,status=status.HTTP_201_CREATED)
+
+# class EmployeeACtions(APIView):
+#     def getter(self,pk):
+#         try:
+#             return Employee.objects.get(pk=pk)
+#         except Employee.DoesNotExist:
+#             raise Http404
+
+#     def get(self,request,pk):
+#         return Response(EmployeeSerializer(self.getter(pk)).data, status=status.HTTP_200_OK)
+    
+#     def put(self,request,pk):
+#         slr = EmployeeSerializer(self.getter(pk),data = request.data)
+#         if slr.is_valid():
+#             slr.save()
+#             return Response(slr.data, status = status.HTTP_201_CREATED) 
+#         return Response(slr.errors, status = status.HTTP_400_BAD_REQUEST) 
+    
+#     def delete(self,request,pk):
+#         self.getter(pk).delete()
+#         return Response(status = status.HTTP_204_NO_CONTENT)
+        
 
 
-
+class EmployeeList(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
+    queryset = Employee.objects.all()
+     
